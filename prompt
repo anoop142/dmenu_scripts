@@ -1,0 +1,11 @@
+#!/bin/bash
+
+choices="shutdown \nreboot \nlogout "
+
+chosen=$(echo -e "$choices" | dmenu -i -p "Do you really want to?")
+
+case "$chosen" in 
+	"shutdown ") poweroff;;
+	"reboot ") reboot;;
+	"logout ") killall dwm;
+esac
