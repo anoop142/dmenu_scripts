@@ -1,0 +1,35 @@
+#!/bin/bash
+# This needs a patched got-mtpfs with list support
+
+check_mtp(){
+devices=$(go-mtpfs -list) || exit 1
+}
+
+mount_mtp(){
+chosen=$( go-mtpfs -list | dmenu)
+
+[[ -z "$chosen" ]] && exit 1
+
+n=0
+base_mount_point="$HOME/cell"
+
+while ! mkdir "$base_mount_point$n"
+do
+	n=$((n+1))
+done
+
+device_serial=$(echo "${chosen##* }")
+
+go-mtpfs -dev  "$device_serial" "$base_mount_point$n" &
+
+}
+
+if [ -z "$1" ]
+then
+	mount_mtp
+else
+	check_mtp
+	exit 0
+fi
+
+

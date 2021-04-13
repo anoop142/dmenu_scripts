@@ -1,0 +1,28 @@
+#!/bin/bash
+
+choices=""
+
+
+internal_unmount check
+
+(( $? == 0 )) && choices="Internal/USB"
+
+
+mtp_unmount check
+(( $? == 0 )) && choices="$choices""\nAndroid"
+
+
+[ -z "$choices" ] && echo "No devices to unmount" | dmenu && exit 1
+
+chosen=$(echo -e "$choices" | dmenu -p "Unmount" )
+
+case "$chosen" in
+	"Internal/USB") internal_unmount;;
+	"Android") mtp_unmount;;
+esac
+
+
+
+
+
+

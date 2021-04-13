@@ -1,0 +1,20 @@
+#!/bin/bash
+
+mount_options="Internal"
+
+usb_mount "check"
+
+(( $? == 0 )) && mount_options="$mount_options\nUSB devices"
+
+mtp_mount "check" 
+
+
+(( $? == 0 )) && mount_options="$mount_options\nAndroid"
+
+chosen=$(echo -e "$mount_options"  | dmenu -p "Mount")
+
+case "$chosen" in
+	"Internal")internal_mount;;
+	"USB devices")usb_mount;;
+	"Android")mtp_mount;;
+esac

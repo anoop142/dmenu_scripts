@@ -1,0 +1,38 @@
+#!/bin/bash
+
+check_usb(){
+
+devices=$(lsblk  -o tran,kname,model,mountpoint | grep -v "/media" |  grep usb)
+
+(( $? != 0 )) && exit 1
+
+}
+
+
+mount_usb(){
+device_choice=($(lsblk  -o tran,kname,model | grep usb | awk '{print $2 " " $NF}' | dmenu -p "device to mount" ))
+
+[ -z $device_choice ]  && exit 1
+
+mount  | grep -q "$device_choice" && echo "Already mounted!" | dmenu && exit 0
+
+partition=$(lsblk "/dev/${device_choice[0]}" -o kname| tail -n +3 | dmenu)
+
+[ -z "$partition" ] && exit 1
+
+mount | grep -q "$partition" && echo "ALready mounted!" | dmenu && exit 0
+
+udisksctl mount -b "/dev/$partition" || (echo "cannot mount $partition" | dmenu)
+
+}
+
+
+
+if [ -z "$1" ]
+then 
+	mount_usb
+else
+	check_usb
+	exit 0
+
+fi

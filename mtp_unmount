@@ -1,0 +1,24 @@
+#!/bin/bash
+
+check_mounted(){
+
+	mount | grep -q "cell" 
+	(( $? == 0  )) && exit 0
+}
+
+
+unmount_mtp(){
+	chosen=$(mount | grep cell | cut -d ' ' -f 3 | dmenu )
+
+	fusermount -u "$chosen" && rmdir "$chosen"
+	(( $? == 1  )) && echo "cannot unmount" | dmenu
+}
+
+if [ -z "$1" ]
+then
+	unmount_mtp
+else
+	check_mounted
+	exit 1
+
+fi
