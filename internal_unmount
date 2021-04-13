@@ -1,0 +1,26 @@
+#!/bin/bash
+
+check_mounted(){
+	lsblk | grep "/run/media" || exit 1 
+}
+
+unmount_disk(){
+	mounted_devices=$(lsblk -o mountpoint | grep "/run/media" )
+	chosen=$(echo -e  "All\n$mounted_devices"| dmenu)
+	[ -z "$chosen" ] && exit 1
+
+	if [[ "$chosen" == "All" ]]
+	then
+		umount /run/media/$USER/*
+	else
+		umount  "$chosen" || echo "cannot unmount $chosen" | dmenu
+	fi
+}
+
+if [ -z "$1" ] 
+then
+	unmount_disk
+else
+	check_mounted
+	exit 0
+fi
